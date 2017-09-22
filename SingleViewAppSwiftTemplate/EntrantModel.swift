@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 
+// Protocols
 protocol RideAccessable {
     var hasAccess: Bool { get }
     var canSkipLines: Bool { get }
@@ -31,6 +32,22 @@ protocol InfoSubmittable {
     var personalInfoRequired: Bool { get }
 }
 
+protocol SubmittableInfo {
+    var firstName: String { get }
+    var lastName: String { get }
+    var city: String { get }
+    var state: String { get }
+    var zipCode: Int { get }
+}
+
+// Enums
+
+enum InfoError: Error {
+    case invalidFirstName
+    case invalidLastName
+    case invalidDateOfBirth
+}
+
 enum GuestType {
     case classicGuest
     case vipGuest
@@ -44,7 +61,9 @@ enum EmployeeType {
     case parkManager
 }
 
+// Classes And SubClasses
 class Guest: RideAccessable, AreaAccessable {
+    var type: GuestType
     var hasAccess: Bool = true
     var canSkipLines: Bool
     var amusementAreas: Bool = true
@@ -53,7 +72,8 @@ class Guest: RideAccessable, AreaAccessable {
     var maintanceAreas: Bool = false
     var officeAreas: Bool = false
     
-    init(canSkipLines: Bool) {
+    init(type: GuestType, canSkipLines: Bool) {
+        self.type = type
         self.canSkipLines = canSkipLines
     }
 }
@@ -62,19 +82,12 @@ class ClassicGuest: Guest, InfoSubmittable, Discountable {
     var hasFoodDiscount: Bool = false
     var hasMerchandiseDiscount: Bool = false
     var personalInfoRequired: Bool = false
-    
-    override init(canSkipLines: Bool) {
-        super.init(canSkipLines: false)
-    }
 }
 
 class VipGuest: Guest, InfoSubmittable, Discountable {
     var hasFoodDiscount: Bool = true
     var hasMerchandiseDiscount: Bool = true
     var personalInfoRequired: Bool = false
-    override init(canSkipLines: Bool) {
-        super.init(canSkipLines: true)
-    }
 }
 
 class FreeChildGuest: Guest, InfoSubmittable, Discountable {
@@ -82,18 +95,29 @@ class FreeChildGuest: Guest, InfoSubmittable, Discountable {
     var hasMerchandiseDiscount: Bool = false
     var personalInfoRequired: Bool = true
     var dateOfBirth = Date()
-    
-    override init(canSkipLines: Bool) {
-        super.init(canSkipLines: false)
-    }
 }
 
-class Employee: RideAccessable, Discountable, InfoSubmittable {
+class Employee: RideAccessable, Discountable, InfoSubmittable, SubmittableInfo {
+    var type: EmployeeType
     var hasAccess: Bool = true
     var canSkipLines: Bool = false
     var hasFoodDiscount: Bool = true
     var hasMerchandiseDiscount: Bool = true
     var personalInfoRequired: Bool = true
+    var firstName: String
+    var lastName: String
+    var city: String
+    var state: String
+    var zipCode: Int
+    
+    init(type: EmployeeType, firstName: String, lastName: String, city: String, state: String, zipCode: Int) {
+        self.type = type
+        self.firstName = firstName
+        self.lastName = lastName
+        self.city = city
+        self.state = state
+        self.zipCode = zipCode
+    }
 }
 
 class FoodServices: Employee, AreaAccessable {
@@ -127,17 +151,6 @@ class ParkManager: Employee, AreaAccessable {
     var maintanceAreas: Bool = true
     var officeAreas: Bool = true
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
